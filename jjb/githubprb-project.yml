@@ -1,0 +1,47 @@
+- trigger:
+    name: githubprb
+    triggers:
+      - github-pull-request:
+          admin-list:
+              - <yourusername>
+              - <otherusername>
+          cron: '* * * * *'
+          github-hooks: false
+          permit-all: false
+          allow-whitelist-orgs-as-admins: true
+
+- scm:
+    name: git-scm
+    scm:
+        - git:
+            url: "{git_url}"
+            skip-tag: True
+            git-tool: ci-git
+            refspec: '+refs/pull/*:refs/remotes/origin/pr/*'
+            branches:
+                - '${{ghprbActualCommit}}'
+
+- job-template:
+    name: '{ci_project}-{git_repo}'
+    description: |
+        Managed by Jenkins Job Builder, do not edit manually!
+    node: "{ci_project}"
+    properties:
+        - github:
+            url: https://github.com/{git_username}/{git_repo}/
+    scm:
+        - git-scm:
+            git_url: https://github.com/{git_username}/{git_repo}.git
+    triggers:
+        - githubprb
+    builders:
+        - shell: |
+            exit 0
+
+- project:
+    name: <name_of_your_project_in_cico>
+    jobs:
+        - '{ci_project}-{git_repo}':
+            git_username: <github_namespace_to_clone_from>
+            git_repo: <github_repo_name>
+            ci_project: '{name}'
