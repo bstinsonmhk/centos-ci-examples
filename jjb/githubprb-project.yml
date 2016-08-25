@@ -8,7 +8,7 @@
           cron: '* * * * *'
           github-hooks: false
           permit-all: false
-          trigger-phrase: '.*\[test\].*'
+          trigger-phrase: '.*test.*'
           allow-whitelist-orgs-as-admins: true
 
 - scm:
